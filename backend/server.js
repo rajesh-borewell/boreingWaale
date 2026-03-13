@@ -10,7 +10,7 @@ const app = express();
 // Configure CORS to allow both localhost and your future Render frontend URL
 const allowedOrigins = [
   "http://localhost:5173", // Default Vite local development port
-  // "https://your-demo-frontend-link.onrender.com" // Replace with your Render frontend URL once you have it
+  "https://frontend-jf3f.onrender.com" // Replace with your Render frontend URL once you have it
 ];
 
 app.use(cors({
