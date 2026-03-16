@@ -6,8 +6,11 @@ import { Toaster } from 'react-hot-toast';
 import Navbar from './components/Navbar';
 import Dashboard from './pages/Dashboard';
 import CreateBill from './pages/CreateBill';
+import CreateEstimate from './pages/CreateEstimate';
 import BillHistory from './pages/BillHistory';
+import EstimateHistory from './pages/EstimateHistory';
 import ViewBill from './pages/ViewBill';
+import ViewEstimate from './pages/ViewEstimate';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 
@@ -40,12 +43,24 @@ function AnimatedRoutes({ authInfo, setAuthInfo, handleLogout }) {
                             element={authInfo ? <CreateBill /> : <Navigate to="/login" replace />}
                         />
                         <Route
+                            path="/create-estimate"
+                            element={authInfo ? <CreateEstimate /> : <Navigate to="/login" replace />}
+                        />
+                        <Route
                             path="/history"
                             element={authInfo ? <BillHistory /> : <Navigate to="/login" replace />}
                         />
                         <Route
+                            path="/estimate-history"
+                            element={authInfo ? <EstimateHistory /> : <Navigate to="/login" replace />}
+                        />
+                        <Route
                             path="/view/:id"
                             element={authInfo ? <ViewBill /> : <Navigate to="/login" replace />}
+                        />
+                        <Route
+                            path="/view-estimate/:id"
+                            element={authInfo ? <ViewEstimate /> : <Navigate to="/login" replace />}
                         />
 
                         {/* Fallback */}

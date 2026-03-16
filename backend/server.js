@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const billsRouter = require("./routes/bills");
+const estimatesRouter = require("./routes/estimates");
 const authRouter = require("./routes/auth");
 
 const app = express();
@@ -27,6 +28,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRouter);
 app.use("/api/bills", billsRouter);
+app.use("/api/estimates", estimatesRouter);
 
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;

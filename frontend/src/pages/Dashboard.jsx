@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../lib/axios';
-import { PlusCircle, Search, Activity, Zap, Database, Globe } from 'lucide-react';
+import { PlusCircle, Search, Activity, Zap, Database, Globe, FileClock, ClipboardList } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Background3D from '../components/Background3D';
 
 export default function Dashboard() {
-    const [stats, setStats] = useState({ totalCount: 0 });
+    const [stats, setStats] = useState({ totalBills: 0, totalEstimates: 0, totalCount: 0 });
     const [loading, setLoading] = useState(true);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     const navigate = useNavigate();
@@ -27,8 +27,19 @@ export default function Dashboard() {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get('/bills/stats');
-                setStats(res.data);
+                const [billRes, estRes] = await Promise.all([
+                    axios.get('/bills/stats'),
+                    axios.get('/estimates/stats')
+                ]);
+                
+                const billCount = billRes.data.totalCount || 0;
+                const estCount = estRes.data.totalCount || 0;
+                
+                setStats({
+                    totalBills: billCount,
+                    totalEstimates: estCount,
+                    totalCount: billCount + estCount
+                });
             } catch (error) {
                 console.error("Error fetching stats:", error);
             } finally {
@@ -48,7 +59,7 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="relative min-h-screen bg-black overflow-hidden selection:bg-indigo-500/30">
+        <div className="relative min-h-screen bg-black overflow-x-hidden selection:bg-indigo-500/30">
             <Background3D />
 
             <div className="relative z-10 pt-20 pb-16 px-6 max-w-7xl mx-auto space-y-10">
@@ -105,9 +116,9 @@ export default function Dashboard() {
                                         color: '#22d3ee',
                                         transition: { duration: 0.3 }
                                     }}
-                                    className={`inline-block text-transparent bg-clip-text bg-gradient-to-b from-white via-indigo-400 to-cyan-400 relative px-4 py-2 overflow-visible ${char === '_' ? 'mx-6' : '-mx-3'}`}
+                                    className={`inline-block text-transparent bg-clip-text bg-gradient-to-b from-white via-indigo-400 to-cyan-400 relative px-4 py-2 overflow-visible ${char === ' ' ? 'mx-4' : '-mx-3'}`}
                                 >
-                                    {char === '_' ? ' ' : char}
+                                    {char}
                                     
                                     {/* Holographic Ghosting Layer */}
                                     <motion.span 
@@ -123,7 +134,7 @@ export default function Dashboard() {
                                             delay: i * 0.15 
                                         }}
                                     >
-                                        {char === '_' ? ' ' : char}
+                                        {char}
                                     </motion.span>
                                 </motion.span>
                             ))}
@@ -156,7 +167,7 @@ export default function Dashboard() {
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="flex justify-center"
+                    className="flex justify-center flex-wrap gap-8"
                 >
                     <div className="relative group">
                         <div className="absolute -inset-10 bg-indigo-500/20 blur-[100px] rounded-full animate-pulse" />
@@ -190,50 +201,98 @@ export default function Dashboard() {
                     animate="animate"
                     className="grid grid-cols-1 md:grid-cols-2 gap-8"
                 >
-                    {/* Create Bill - VOID_INIT */}
+                    {/* Create Bill */}
                     <motion.button
                         variants={itemVariants}
                         onClick={() => navigate('/create')}
-                        className="group relative hud-card hologram-border p-10 text-left transition-all hover:scale-[1.02]"
+                        className="group relative hud-card hologram-border p-6 md:p-10 text-left transition-all hover:scale-[1.02]"
                     >
                         <div className="scanline" />
-                        <div className="flex flex-col h-full gap-6">
-                            <div className="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/30 group-hover:bg-indigo-500/20 transition-all">
-                                <Zap className="w-8 h-8 text-indigo-400 glow-violet" />
+                        <div className="flex flex-col h-full gap-4 md:gap-6">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center border border-indigo-500/30 group-hover:bg-indigo-500/20 transition-all">
+                                <Zap className="w-6 h-6 md:w-8 md:h-8 text-indigo-400 glow-violet" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-white italic mb-3 tracking-tight">CREATE BILL</h2>
+                                <h2 className="text-2xl md:text-3xl font-black text-white italic mb-2 md:mb-3 tracking-tight uppercase">Create Bill</h2>
                                 <p className="text-gray-400 font-mono text-xs leading-relaxed opacity-80 group-hover:opacity-100">
                                     Generate a new invoice thread. Autonomous calculations and immediate distribution protocols enabled.
                                 </p>
                             </div>
                             <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between opacity-40 group-hover:opacity-100 transition-opacity">
-                                <span className="text-[10px] font-mono text-indigo-300 tracking-widest uppercase">Expansion Protocol: 001</span>
+                                <span className="text-[10px] font-mono text-indigo-300 tracking-widest uppercase">Bills Count: {stats.totalBills}</span>
                                 <Activity className="w-4 h-4 text-indigo-500" />
                             </div>
                         </div>
                     </motion.button>
 
-                    {/* View History - HISTORY_LOG */}
+                    {/* Create Estimate */}
                     <motion.button
                         variants={itemVariants}
-                        onClick={() => navigate('/history')}
-                        className="group relative hud-card hologram-border p-10 text-left transition-all hover:scale-[1.02]"
+                        onClick={() => navigate('/create-estimate')}
+                        className="group relative hud-card hologram-border p-6 md:p-10 text-left transition-all hover:scale-[1.02] border-violet-500/30"
                     >
                         <div className="scanline" />
-                        <div className="flex flex-col h-full gap-6">
-                            <div className="w-14 h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center border border-cyan-500/30 group-hover:bg-cyan-500/20 transition-all">
-                                <Search className="w-8 h-8 text-cyan-400 glow-cyan" />
+                        <div className="flex flex-col h-full gap-4 md:gap-6">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-violet-500/10 rounded-2xl flex items-center justify-center border border-violet-500/30 group-hover:bg-violet-500/20 transition-all">
+                                <FileClock className="w-6 h-6 md:w-8 md:h-8 text-violet-400 glow-violet" />
                             </div>
                             <div>
-                                <h2 className="text-3xl font-black text-white italic mb-3 tracking-tight">BILL HISTORY</h2>
+                                <h2 className="text-2xl md:text-3xl font-black text-white italic mb-2 md:mb-3 tracking-tight uppercase">Create Estimate</h2>
                                 <p className="text-gray-400 font-mono text-xs leading-relaxed opacity-80 group-hover:opacity-100">
-                                    Search across the database history. Decrypt past invoice signatures and review archived domains.
+                                    Initialize a new estimation manifest. Mirroring bill logic with preliminary value assessment.
                                 </p>
                             </div>
                             <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between opacity-40 group-hover:opacity-100 transition-opacity">
-                                <span className="text-[10px] font-mono text-cyan-300 tracking-widest uppercase">Archive Protocol: 024</span>
+                                <span className="text-[10px] font-mono text-violet-300 tracking-widest uppercase">Estimates Count: {stats.totalEstimates}</span>
+                                <Activity className="w-4 h-4 text-violet-500" />
+                            </div>
+                        </div>
+                    </motion.button>
+
+                    {/* Bill History */}
+                    <motion.button
+                        variants={itemVariants}
+                        onClick={() => navigate('/history')}
+                        className="group relative hud-card hologram-border p-6 md:p-10 text-left transition-all hover:scale-[1.02]"
+                    >
+                        <div className="scanline" />
+                        <div className="flex flex-col h-full gap-4 md:gap-6">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-cyan-500/10 rounded-2xl flex items-center justify-center border border-cyan-500/30 group-hover:bg-cyan-500/20 transition-all">
+                                <Search className="w-6 h-6 md:w-8 md:h-8 text-cyan-400 glow-cyan" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-black text-white italic mb-2 md:mb-3 tracking-tight uppercase">Bill History</h2>
+                                <p className="text-gray-400 font-mono text-xs leading-relaxed opacity-80 group-hover:opacity-100">
+                                    Search across the invoice database history. Decrypt past invoice signatures and review archived domains.
+                                </p>
+                            </div>
+                            <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between opacity-40 group-hover:opacity-100 transition-opacity">
+                                <span className="text-[10px] font-mono text-cyan-300 tracking-widest uppercase">Ref Logs: 024</span>
                                 <Database className="w-4 h-4 text-cyan-500" />
+                            </div>
+                        </div>
+                    </motion.button>
+
+                    {/* Estimate History */}
+                    <motion.button
+                        variants={itemVariants}
+                        onClick={() => navigate('/estimate-history')}
+                        className="group relative hud-card hologram-border p-6 md:p-10 text-left transition-all hover:scale-[1.02] border-cyan-500/30"
+                    >
+                        <div className="scanline" />
+                        <div className="flex flex-col h-full gap-4 md:gap-6">
+                            <div className="w-12 h-12 md:w-14 md:h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center border border-emerald-500/30 group-hover:bg-emerald-500/20 transition-all">
+                                <ClipboardList className="w-6 h-6 md:w-8 md:h-8 text-emerald-400 glow-emerald" />
+                            </div>
+                            <div>
+                                <h2 className="text-2xl md:text-3xl font-black text-white italic mb-2 md:mb-3 tracking-tight uppercase">Estimate History</h2>
+                                <p className="text-gray-400 font-mono text-xs leading-relaxed opacity-80 group-hover:opacity-100">
+                                    Review historical estimation records. Track proposed values and audit preliminary manifest states.
+                                </p>
+                            </div>
+                            <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between opacity-40 group-hover:opacity-100 transition-opacity">
+                                <span className="text-[10px] font-mono text-emerald-300 tracking-widest uppercase">Ref Logs: 088</span>
+                                <Database className="w-4 h-4 text-emerald-500" />
                             </div>
                         </div>
                     </motion.button>

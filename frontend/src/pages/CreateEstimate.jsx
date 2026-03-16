@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import Background3D from '../components/Background3D';
 
-export default function CreateBill() {
+export default function CreateEstimate() {
     const navigate = useNavigate();
     const [clientName, setClientName] = useState('');
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -59,9 +59,9 @@ export default function CreateBill() {
         const toastId = toast.loading('INITIATING SAVE PROTOCOL...');
         try {
             const payload = { clientName, date, items, grandTotal };
-            const res = await axios.post('/bills', payload);
-            toast.success('DATA EXPANSION SUCCESSFUL', { id: toastId });
-            navigate(`/view/${res.data._id}`);
+            const res = await axios.post('/estimates', payload);
+            toast.success('ESTIMATE GENERATED SUCCESSFULLY', { id: toastId });
+            navigate(`/view-estimate/${res.data._id}`);
         } catch (err) {
             console.error(err);
             toast.error('PROTOCOL FAILURE: RETRY REQUIRED', { id: toastId });
@@ -88,10 +88,10 @@ export default function CreateBill() {
                         <div className="w-full md:w-auto">
                             <div className="flex items-center gap-2 mb-2">
                                 <Zap className="w-5 h-5 text-indigo-400 glow-violet" />
-                                <span className="text-[10px] font-mono text-indigo-300 tracking-[0.4em] uppercase whitespace-nowrap">Void Manifest 001</span>
+                                <span className="text-[10px] font-mono text-indigo-300 tracking-[0.4em] uppercase whitespace-nowrap">Void Manifest 002</span>
                             </div>
                             <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-tight">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">INITIATE BILL</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">INITIATE ESTIMATE</span>
                             </h2>
                         </div>
                         <div className="flex flex-col items-start md:items-end w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-white/5">
@@ -120,7 +120,7 @@ export default function CreateBill() {
                             </div>
                             <div className="space-y-3">
                                 <label className="flex items-center gap-2 text-[12px] font-mono text-indigo-300 uppercase tracking-widest opacity-70">
-                                    <Activity className="w-3 h-3" /> Bill Date
+                                    <Activity className="w-3 h-3" /> Estimate Date
                                 </label>
                                 <div className="flex gap-2">
                                     <div className="relative flex-1 group">
@@ -274,7 +274,7 @@ export default function CreateBill() {
                                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-indigo-500 animate-pulse" />
                                 <div className="relative bg-black px-12 py-5 rounded-2xl flex items-center justify-center gap-3 group-hover:bg-transparent transition-colors">
                                     <Save className="w-6 h-6 text-white" />
-                                    <span className="text-lg font-black text-white italic tracking-tight uppercase">Generate Bill</span>
+                                    <span className="text-lg font-black text-white italic tracking-tight uppercase">Generate Estimate</span>
                                 </div>
                             </button>
                         </div>
@@ -291,4 +291,3 @@ export default function CreateBill() {
         </div>
     );
 }
-

@@ -31,16 +31,16 @@ function numberToWords(n) {
     return result + ' Only';
 }
 
-export default function A4Preview({ bill }) {
-    if (!bill) return null;
+export default function A4PreviewEstimate({ estimate }) {
+    if (!estimate) return null;
 
     const MIN_ROWS = 12;
-    const items = [...bill.items];
+    const items = [...estimate.items];
     const emptyRowsCount = Math.max(0, MIN_ROWS - items.length);
     const emptyRows = Array.from({ length: emptyRowsCount });
-    const total = bill.grandTotal ?? items.reduce((s, i) => s + (i.amount || 0), 0);
-    const formattedDate = new Date(bill.date).toLocaleDateString('en-GB').replace(/\//g, '-');
-    const billNo = String(bill.billNumber).padStart(4, '0');
+    const total = estimate.grandTotal ?? items.reduce((s, i) => s + (i.amount || 0), 0);
+    const formattedDate = new Date(estimate.date).toLocaleDateString('en-GB').replace(/\//g, '-');
+    const estNo = String(estimate.estimateNumber).padStart(4, '0');
 
     return (
         <div 
@@ -50,9 +50,9 @@ export default function A4Preview({ bill }) {
                 backgroundColor: '#f1f5f9', 
                 display: 'flex', 
                 justifyContent: 'center',
-                alignItems: 'flex-start', // Prevent stretching the inner container vertically
+                alignItems: 'flex-start',
                 width: '850px', 
-                minHeight: '1202px',      // 850 * 1.414 (Exact A4 proportion)
+                minHeight: '1202px',
                 boxSizing: 'border-box',
                 margin: '0 auto'
             }}
@@ -70,8 +70,6 @@ export default function A4Preview({ bill }) {
                     borderRadius: '12px',
                     overflow: 'hidden',
                     boxShadow: '0 20px 40px rgba(0,0,0,0.15)',
-                    // flex 1 so it can grow if contents are many,
-                    // but on sparse bills it takes the rest of the height gracefully
                     flex: 1
                 }}
             >
@@ -114,18 +112,18 @@ export default function A4Preview({ bill }) {
                         </div>
                     </div>
 
-                    {/* RIGHT: Invoice badge + Bank card */}
+                    {/* RIGHT: Estimate badge + Bank card */}
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', flexShrink: 0 }}>
-                        {/* Invoice badge */}
+                        {/* Estimate badge */}
                         <div style={{
                             backgroundColor: NAVY, borderRadius: '6px', padding: '10px 18px', textAlign: 'center', minWidth: '150px',
                         }}>
-                            <p style={{ fontSize: '9px', fontWeight: '700', color: 'rgba(255,255,255,0.55)', margin: '0 0 2px', letterSpacing: '2px', textTransform: 'uppercase' }}>Invoice</p>
-                            <p style={{ fontSize: '22px', fontWeight: '700', color: WHITE, margin: 0, letterSpacing: '2px' }}>#{billNo}</p>
+                            <p style={{ fontSize: '9px', fontWeight: '700', color: 'rgba(255,255,255,0.55)', margin: '0 0 2px', letterSpacing: '2px', textTransform: 'uppercase' }}>Estimate</p>
+                            <p style={{ fontSize: '22px', fontWeight: '700', color: WHITE, margin: 0, letterSpacing: '2px' }}>#{estNo}</p>
                             <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.55)', margin: '3px 0 0' }}>{formattedDate}</p>
                         </div>
 
-                        {/* Bank details card */}
+                        {/* Bank details card (Kept for professionalism) */}
                         <div style={{
                             backgroundColor: LIGHT, border: `1px solid ${BORDER}`, borderRadius: '6px', padding: '8px 14px', minWidth: '185px',
                         }}>
@@ -141,15 +139,15 @@ export default function A4Preview({ bill }) {
             </div>
 
             {/* ════════════════════════════════════════
-                BILL-TO BAND
+                ESTIMATE-FOR BAND
             ════════════════════════════════════════ */}
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
                 padding: '9px 28px', backgroundColor: LIGHT, borderBottom: `2px solid ${NAVY}`,
             }}>
                 <div>
-                    <p style={{ fontSize: '9px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 2px' }}>Bill To</p>
-                    <p style={{ fontSize: '14px', fontWeight: '700', color: NAVY, margin: 0, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{bill.clientName}</p>
+                    <p style={{ fontSize: '9px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 2px' }}>Estimate For</p>
+                    <p style={{ fontSize: '14px', fontWeight: '700', color: NAVY, margin: 0, textTransform: 'uppercase', letterSpacing: '0.4px' }}>{estimate.clientName}</p>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: '9px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.8px', margin: '0 0 2px' }}>Date</p>
@@ -198,7 +196,7 @@ export default function A4Preview({ bill }) {
                 </table>
             </div>
 
-            {/* ════ AMOUNT IN WORDS  +  GRAND TOTAL (same row, two boxes) ════ */}
+            {/* ════ AMOUNT IN WORDS  +  ESTIMATED TOTAL ════ */}
             <div style={{
                 borderTop: `2px solid ${NAVY}`,
                 display: 'flex',
@@ -215,7 +213,7 @@ export default function A4Preview({ bill }) {
                     justifyContent: 'center',
                     gap: '2px',
                 }}>
-                    <span style={{ fontSize: '8px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.8px' }}>Amount in Words</span>
+                    <span style={{ fontSize: '8px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '0.8px' }}>Estimated Amount in Words</span>
                     <span style={{ fontSize: '11px', fontWeight: '700', color: NAVY, fontStyle: 'italic', lineHeight: '1.4' }}>{numberToWords(total)}</span>
                 </div>
 
@@ -230,7 +228,7 @@ export default function A4Preview({ bill }) {
                     flexShrink: 0,
                     minWidth: '180px',
                 }}>
-                    <span style={{ fontSize: '9px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '1px' }}>Grand Total</span>
+                    <span style={{ fontSize: '9px', fontWeight: '700', color: MUTED, textTransform: 'uppercase', letterSpacing: '1px' }}>Estimated Total</span>
                     <span style={{ fontSize: '22px', fontWeight: '800', color: ORANGE, letterSpacing: '0.5px' }}>
                         ₹ {total.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </span>
@@ -238,7 +236,7 @@ export default function A4Preview({ bill }) {
             </div>
 
             {/* ════════════════════════════════════════
-                FOOTER — Digitally Verified only
+                FOOTER
             ════════════════════════════════════════ */}
             <div className="signature-container" style={{
                 display: 'flex', justifyContent: 'center', alignItems: 'center',
@@ -248,11 +246,11 @@ export default function A4Preview({ bill }) {
             }}>
                 <VerifiedIcon />
                 <div>
-                    <p style={{ fontSize: '12px', fontWeight: '800', color: '#15803d', margin: 0, letterSpacing: '0.3px', textTransform: 'uppercase' }}>
-                        Digitally Verified
+                    <p style={{ fontSize: '12px', fontWeight: '800', color: NAVY, margin: 0, letterSpacing: '0.3px', textTransform: 'uppercase' }}>
+                        Digitally Generated Estimate
                     </p>
-                    <p style={{ fontSize: '9px', color: '#475569', margin: '2px 0 0', fontWeight: '500' }}>
-                        Computer-generated invoice · No physical signature required
+                    <p style={{ fontSize: '11.5px', color: '#334155', margin: '3px 0 0', fontWeight: '700', lineHeight: '1.4' }}>
+                        This is an estimation and not a final invoice. Prices may vary at the time of final billing.
                     </p>
                 </div>
             </div>
@@ -335,12 +333,14 @@ function BankIcon() {
 function VerifiedIcon() {
     return (
         <div style={{
-            width: '32px', height: '32px', borderRadius: '50%', backgroundColor: '#dcfce7',
-            border: '2px solid #16a34a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            width: '32px', height: '32px', borderRadius: '50%', backgroundColor: LIGHT,
+            border: `2.5px solid ${NAVY}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
         }}>
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="#16a34a" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
+                stroke={NAVY} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
             </svg>
         </div>
     );

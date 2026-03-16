@@ -17,7 +17,7 @@ export default function Navbar({ onLogout, username }) {
 
     return (
         <nav className="fixed top-4 left-1/2 -translate-x-1/2 w-[95%] max-w-7xl z-50 no-print">
-            <div className="hud-card hologram-border rounded-2xl px-6 py-2.5 flex items-center justify-between backdrop-blur-3xl relative">
+            <div className="hud-card hologram-border rounded-2xl px-4 md:px-6 py-2.5 flex items-center justify-between backdrop-blur-3xl relative">
                 <div className="scanline" />
                 <Link to="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-3 group z-10">
                     <div className="relative">
@@ -27,12 +27,12 @@ export default function Navbar({ onLogout, username }) {
                         <div className="absolute -inset-1.5 bg-indigo-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                     </div>
                     <div className="flex flex-col">
-                        <span className="text-base font-black text-white tracking-[0.2em] uppercase italic leading-tight">
+                        <span className="text-sm md:text-base font-black text-white tracking-[0.1em] md:tracking-[0.2em] uppercase italic leading-tight">
                             DIGITAL BILL
                         </span>
                         <div className="flex items-center gap-1.5 opacity-70">
-                            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-pulse" />
-                            <span className="text-[11px] font-black font-mono text-indigo-300 uppercase tracking-tighter">SYSTEM STABILITY: 100%</span>
+                            <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse" />
+                            <span className="text-[9px] md:text-[11px] font-black font-mono text-indigo-300 uppercase tracking-tighter whitespace-nowrap">STATUS: 100% OK</span>
                         </div>
                     </div>
                 </Link>

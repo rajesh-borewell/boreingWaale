@@ -19,41 +19,41 @@ import {
 } from 'lucide-react';
 import Background3D from '../components/Background3D';
 
-export default function BillHistory() {
-    const [bills, setBills] = useState([]);
+export default function EstimateHistory() {
+    const [estimates, setEstimates] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const billsPerPage = 15;
+    const estimatesPerPage = 15;
     const navigate = useNavigate();
 
     const [searchParams, setSearchParams] = useState({
-        billNumber: '',
+        estimateNumber: '',
         clientName: '',
         startDate: '',
         endDate: ''
     });
 
-    const fetchBills = async () => {
+    const fetchEstimates = async () => {
         setLoading(true);
         try {
             const params = new URLSearchParams();
-            if (searchParams.billNumber) params.append('billNumber', searchParams.billNumber);
+            if (searchParams.estimateNumber) params.append('estimateNumber', searchParams.estimateNumber);
             if (searchParams.clientName) params.append('clientName', searchParams.clientName);
             if (searchParams.startDate) params.append('startDate', searchParams.startDate);
             if (searchParams.endDate) params.append('endDate', searchParams.endDate);
 
-            const res = await axios.get(`/bills?${params.toString()}`);
-            setBills(res.data);
+            const res = await axios.get(`/estimates?${params.toString()}`);
+            setEstimates(res.data);
             setCurrentPage(1); // Reset to first page on search
         } catch (err) {
-            console.error('NO BILL FOUND:', err);
+            console.error('NO ESTIMATE FOUND:', err);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchBills();
+        fetchEstimates();
     }, []);
 
     const handleSearchChange = (e) => {
@@ -62,21 +62,21 @@ export default function BillHistory() {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        fetchBills();
+        fetchEstimates();
     };
 
     const handleClearFilters = () => {
         const resetParams = {
-            billNumber: '',
+            estimateNumber: '',
             clientName: '',
             startDate: '',
             endDate: ''
         };
         setSearchParams(resetParams);
         setLoading(true);
-        axios.get('/bills')
+        axios.get('/estimates')
             .then(res => {
-                setBills(res.data);
+                setEstimates(res.data);
                 setCurrentPage(1);
             })
             .catch(err => console.error('PROTOCOL_RESET_ERROR:', err))
@@ -115,16 +115,16 @@ export default function BillHistory() {
                     <div>
                         <div className="flex items-center gap-3 text-violet-400 mb-2">
                             <Database className="w-5 h-5 animate-pulse" />
-                            <span className="text-[10px] tracking-[0.4em] uppercase opacity-70">Cloud Databse Connected</span>
+                            <span className="text-[10px] tracking-[0.4em] uppercase opacity-70">Cloud Database Connected</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter italic text-glow uppercase">
-                            BILLS HISTORY
+                            ESTIMATES HISTORY
                         </h1>
                     </div>
                     <div className="flex items-center gap-4 bg-white/[0.03] border border-white/10 p-4 rounded-2xl backdrop-blur-xl">
                         <div className="text-right">
-                            <div className="text-[11px] text-gray-500 uppercase tracking-widest leading-none mb-1">Total Bills</div>
-                            <div className="text-2xl font-black text-white leading-none">{bills.length}</div>
+                            <div className="text-[11px] text-gray-500 uppercase tracking-widest leading-none mb-1">Total Estimates</div>
+                            <div className="text-2xl font-black text-white leading-none">{estimates.length}</div>
                         </div>
                         <div className="w-[1px] h-10 bg-white/10"></div>
                         <Activity className="w-8 h-8 text-violet-500 opacity-50" />
@@ -136,19 +136,19 @@ export default function BillHistory() {
                     <div className="scanline"></div>
                     <div className="flex items-center gap-3 mb-8 border-b border-white/5 pb-4">
                         <Terminal className="w-5 h-5 text-cyan-400" />
-                        <h2 className="text-xs font-black text-gray-400 tracking-[0.3em] uppercase italic">RECORDS FILTER PROTOCOL</h2>
+                        <h2 className="text-xs font-black text-gray-400 tracking-[0.3em] uppercase italic">ESTIMATE FILTER PROTOCOL</h2>
                     </div>
 
                     <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
                         <div className="space-y-2">
-                            <label className="text-[12px] text-violet-400/60 font-black uppercase tracking-widest ml-1">BILL NUMBER</label>
+                            <label className="text-[12px] text-violet-400/60 font-black uppercase tracking-widest ml-1">ESTIMATE NO.</label>
                             <div className="relative">
                                 <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-600" />
                                 <input
                                     type="text"
-                                    name="billNumber"
-                                    placeholder="RECORD_#"
-                                    value={searchParams.billNumber}
+                                    name="estimateNumber"
+                                    placeholder="EST_#"
+                                    value={searchParams.estimateNumber}
                                     onChange={handleSearchChange}
                                     className="w-full bg-white/[0.03] border border-white/5 rounded-xl p-3 pl-10 text-white placeholder-gray-700 focus:outline-none focus:ring-1 focus:ring-violet-500/50 transition-all text-sm"
                                 />
@@ -226,11 +226,11 @@ export default function BillHistory() {
                             <div className="w-12 h-12 border-2 border-violet-500/20 border-t-violet-500 rounded-full animate-spin mb-4"></div>
                             <span className="text-[10px] tracking-[0.4em] uppercase animate-pulse">LOADING RECORDS...</span>
                         </div>
-                    ) : bills.length === 0 ? (
+                    ) : estimates.length === 0 ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-600">
                             <HardDrive className="w-12 h-12 mb-4 opacity-20" />
-                            <h3 className="text-xl font-black uppercase italic tracking-widest mb-2">Records Empty</h3>
-                            <p className="text-[10px] uppercase tracking-widest opacity-50">No records found with specified filters.</p>
+                            <h3 className="text-xl font-black uppercase italic tracking-widest mb-2">History Empty</h3>
+                            <p className="text-[10px] uppercase tracking-widest opacity-50">No estimates found with specified filters.</p>
                             <button onClick={handleClearFilters} className="mt-6 text-violet-400 underline uppercase text-[12px] font-black tracking-widest hover:text-white transition-colors">Reset Filters</button>
                         </div>
                     ) : (
@@ -239,7 +239,7 @@ export default function BillHistory() {
                                 <table className="w-full text-left border-collapse">
                                 <thead className="bg-white/[0.02] border-b border-white/5 text-[9px] md:text-[12px] uppercase tracking-widest md:tracking-[0.2em] font-black text-violet-400/60 italic">
                                     <tr>
-                                        <th className="px-4 md:px-8 py-4 md:py-6 whitespace-nowrap">BILL NO.</th>
+                                        <th className="px-4 md:px-8 py-4 md:py-6 whitespace-nowrap">EST NO.</th>
                                         <th className="px-4 md:px-8 py-4 md:py-6 whitespace-nowrap">DATE</th>
                                         <th className="px-4 md:px-8 py-4 md:py-6 whitespace-nowrap">CLIENT NAME</th>
                                         <th className="px-4 md:px-8 py-4 md:py-6 whitespace-nowrap">TOTAL AMOUNT</th>
@@ -248,42 +248,42 @@ export default function BillHistory() {
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm">
-                                    {bills.slice((currentPage - 1) * billsPerPage, currentPage * billsPerPage).map((bill, index) => (
+                                    {estimates.slice((currentPage - 1) * estimatesPerPage, currentPage * estimatesPerPage).map((est, index) => (
                                         <motion.tr
-                                            key={bill._id}
+                                            key={est._id}
                                             initial={{ opacity: 0, x: -10 }}
                                             animate={{ opacity: 1, x: 0 }}
                                             transition={{ delay: index * 0.05 }}
                                             className="border-b border-white/5 hover:bg-white/[0.04] transition-all group relative cursor-pointer"
-                                            onClick={() => navigate(`/view/${bill._id}`)}
+                                            onClick={() => navigate(`/view-estimate/${est._id}`)}
                                         >
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <span className="text-xs font-black text-white group-hover:text-cyan-400 transition-colors">
-                                                    #{String(bill.billNumber).padStart(4, '0')}
+                                                    #{String(est.estimateNumber).padStart(4, '0')}
                                                 </span>
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6 text-gray-500 text">
-                                                {new Date(bill.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.')}
+                                                {new Date(est.date).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '.')}
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex flex-col">
-                                                    <span className="text-gray-300 font-bold tracking-tight uppercase group-hover:text-white transition-colors">{bill.clientName}</span>
-                                                    <span className="text-[11px] text-gray-600 uppercase tracking-widest">ID: {bill._id.slice(-6).toUpperCase()}</span>
+                                                    <span className="text-gray-300 font-bold tracking-tight uppercase group-hover:text-white transition-colors">{est.clientName}</span>
+                                                    <span className="text-[11px] text-gray-600 uppercase tracking-widest">ID: {est._id.slice(-6).toUpperCase()}</span>
                                                 </div>
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6">
                                                 <div className="flex items-baseline gap-1 text-white font-black italic">
                                                     <span className="text-[14px] text-violet-400 opacity-50">₹</span>
                                                     <span className="text-base group-hover:text-glow-cyan transition-all">
-                                                        {bill.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                                                        {est.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                                                     </span>
                                                 </div>
                                             </td>
                                             <td className="px-4 md:px-8 py-4 md:py-6">
-                                                {bill.createdBy ? (
+                                                {est.createdBy ? (
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_8px_rgba(6,182,212,0.6)]"></div>
-                                                        <span className="text-[12px] uppercase font-black text-gray-400">{bill.createdBy.username.split(' ')[0]}</span>
+                                                        <span className="text-[12px] uppercase font-black text-gray-400">{est.createdBy.username.split(' ')[0]}</span>
                                                     </div>
                                                 ) : (
                                                     <span className="text-[10px] text-gray-700 italic">SYSTEM GEN</span>
@@ -307,10 +307,10 @@ export default function BillHistory() {
                         </div>
 
                         {/* Pagination Controls */}
-                        {bills.length > billsPerPage && (
+                        {estimates.length > estimatesPerPage && (
                             <div className="p-6 border-t border-white/5 flex items-center justify-between bg-white/[0.01]">
                                 <div className="text-[10px] text-gray-500 uppercase tracking-widest font-black italic">
-                                    Displaying {Math.min((currentPage - 1) * billsPerPage + 1, bills.length)} - {Math.min(currentPage * billsPerPage, bills.length)} of {bills.length} records
+                                    Displaying {Math.min((currentPage - 1) * estimatesPerPage + 1, estimates.length)} - {Math.min(currentPage * estimatesPerPage, estimates.length)} of {estimates.length} records
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <motion.button
@@ -330,16 +330,16 @@ export default function BillHistory() {
                                         <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-violet-600/20 border border-violet-500/30 text-white text-xs font-black italic">
                                             {currentPage}
                                         </span>
-                                        <span className="text-[10px] text-gray-400 font-black">OF {Math.ceil(bills.length / billsPerPage)}</span>
+                                        <span className="text-[10px] text-gray-400 font-black">OF {Math.ceil(estimates.length / estimatesPerPage)}</span>
                                     </div>
 
                                     <motion.button
-                                        whileHover={currentPage < Math.ceil(bills.length / billsPerPage) ? { scale: 1.05, backgroundColor: "rgba(255,255,255,0.05)" } : {}}
-                                        whileTap={currentPage < Math.ceil(bills.length / billsPerPage) ? { scale: 0.95 } : {}}
-                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(bills.length / billsPerPage)))}
-                                        disabled={currentPage === Math.ceil(bills.length / billsPerPage)}
+                                        whileHover={currentPage < Math.ceil(estimates.length / estimatesPerPage) ? { scale: 1.05, backgroundColor: "rgba(255,255,255,0.05)" } : {}}
+                                        whileTap={currentPage < Math.ceil(estimates.length / estimatesPerPage) ? { scale: 0.95 } : {}}
+                                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil(estimates.length / estimatesPerPage)))}
+                                        disabled={currentPage === Math.ceil(estimates.length / estimatesPerPage)}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl border border-white/5 transition-all text-[10px] font-black uppercase tracking-widest ${
-                                            currentPage === Math.ceil(bills.length / billsPerPage) ? 'opacity-20 cursor-not-allowed' : 'text-cyan-400 hover:text-white'
+                                            currentPage === Math.ceil(estimates.length / estimatesPerPage) ? 'opacity-20 cursor-not-allowed' : 'text-cyan-400 hover:text-white'
                                         }`}
                                     >
                                         Next <ChevronRight className="w-4 h-4" />
@@ -356,7 +356,7 @@ export default function BillHistory() {
                     <div className="flex items-center gap-10">
                         <div className="flex items-center gap-2">
                             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                            <span>STATUS: ENTITY_RECORDS_FETCHED</span>
+                            <span>STATUS: ESTIMATE_RECORDS_FETCHED</span>
                         </div>
                         <div className="flex items-center gap-2">
                             <Binary className="w-3 h-3" />
