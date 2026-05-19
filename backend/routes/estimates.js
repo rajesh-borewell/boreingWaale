@@ -50,7 +50,7 @@ router.get("/", auth, async (req, res) => {
             }
         }
 
-        const estimates = await Estimate.find(query).populate('createdBy', 'username').sort({ estimateNumber: 1 });
+        const estimates = await Estimate.find(query).populate('createdBy', 'username').sort({ estimateNumber: -1 });
         res.json(estimates);
     } catch (err) {
         res.status(500).json({ error: err.message });

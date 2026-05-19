@@ -4,9 +4,9 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const ItemSchema = new mongoose.Schema({
     srNo: { type: Number, required: true },
     particulars: { type: String, required: true },
-    qty: { type: Number, required: true, default: 1 },
-    rate: { type: Number, required: true, default: 0 },
-    amount: { type: Number, required: true, default: 0 }
+    qty: { type: mongoose.Schema.Types.Mixed, default: "" },
+    rate: { type: mongoose.Schema.Types.Mixed, default: "" },
+    amount: { type: mongoose.Schema.Types.Mixed, default: "" }
 }, { _id: false });
 
 const EstimateSchema = new mongoose.Schema({

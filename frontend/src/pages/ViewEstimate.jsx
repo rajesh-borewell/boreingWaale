@@ -60,9 +60,10 @@ export default function ViewEstimate() {
         const item = newItems[index];
 
         if (field === 'qty' || field === 'rate') {
-            const numValue = parseFloat(value) || 0;
-            item[field] = numValue;
-            item.amount = item.qty * item.rate;
+            item[field] = value;
+            const q = parseFloat(item.qty) || 0;
+            const r = parseFloat(item.rate) || 0;
+            item.amount = q * r;
         } else {
             item[field] = value;
         }
@@ -70,7 +71,7 @@ export default function ViewEstimate() {
     };
 
     const addItem = () => {
-        setItems([...items, { srNo: items.length + 1, particulars: '', qty: 1, rate: 0, amount: 0 }]);
+        setItems([...items, { srNo: items.length + 1, particulars: '', qty: 1, rate: '', amount: 0 }]);
     };
 
     const removeItem = (index) => {
@@ -308,7 +309,7 @@ export default function ViewEstimate() {
                                                 type="text"
                                                 value={item.particulars}
                                                 onChange={(e) => handleItemChange(index, 'particulars', e.target.value)}
-                                                className="w-full bg-white/[0.02] md:bg-transparent border border-white/5 md:border-none rounded-lg px-3 py-2 text-sm text-white font-mono placeholder:text-gray-700 outline-none"
+                                                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder:text-gray-600 outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
                                             />
                                         </div>
 
@@ -318,7 +319,7 @@ export default function ViewEstimate() {
                                                 type="number"
                                                 value={item.qty}
                                                 onChange={(e) => handleItemChange(index, 'qty', e.target.value)}
-                                                className="w-full bg-white/[0.02] md:bg-transparent border border-white/5 md:border-none rounded-lg px-3 py-2 text-sm text-white font-mono text-left md:text-right outline-none"
+                                                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono text-left md:text-right outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
                                             />
                                         </div>
 
@@ -328,7 +329,7 @@ export default function ViewEstimate() {
                                                 type="number"
                                                 value={item.rate}
                                                 onChange={(e) => handleItemChange(index, 'rate', e.target.value)}
-                                                className="w-full bg-white/[0.02] md:bg-transparent border border-white/5 md:border-none rounded-lg px-3 py-2 text-sm text-indigo-300 font-mono text-left md:text-right outline-none"
+                                                className="w-full bg-white/[0.03] border border-white/10 rounded-lg px-3 py-2 text-sm text-indigo-300 font-mono text-left md:text-right outline-none focus:border-indigo-500/50 focus:bg-white/10 transition-all"
                                             />
                                         </div>
 

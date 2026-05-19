@@ -4,9 +4,9 @@ const AutoIncrement = require('mongoose-sequence')(mongoose);
 const ItemSchema = new mongoose.Schema({
     srNo: { type: Number, required: true },
     particulars: { type: String, required: true },
-    qty: { type: Number, required: true, default: 1 },
-    rate: { type: Number, required: true, default: 0 },
-    amount: { type: Number, required: true, default: 0 }
+    qty: { type: mongoose.Schema.Types.Mixed, default: "" },
+    rate: { type: mongoose.Schema.Types.Mixed, default: "" },
+    amount: { type: mongoose.Schema.Types.Mixed, default: "" }
 }, { _id: false });
 
 const BillSchema = new mongoose.Schema({
@@ -19,7 +19,8 @@ const BillSchema = new mongoose.Schema({
     paymentStatus: { type: String, enum: ['Pending', 'Received'], default: 'Pending' },
     paymentDate: { type: Date },
     paymentMode: { type: String, enum: ['Cash', 'Cheque', 'Online'] },
-    chequeNumber: { type: String }
+    chequeNumber: { type: String },
+    receivedAmount: { type: Number, default: null }
 }, {
     timestamps: true
 });

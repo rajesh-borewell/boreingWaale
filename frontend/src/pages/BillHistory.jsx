@@ -33,7 +33,7 @@ export default function BillHistory() {
     const navigate = useNavigate();
 
     const [paymentModal, setPaymentModal] = useState({ isOpen: false, bill: null });
-    const [paymentForm, setPaymentForm] = useState({ mode: 'Cash', chequeNumber: '' });
+    const [paymentForm, setPaymentForm] = useState({ mode: 'Cash', chequeNumber: '', receivedAmount: '' });
     const [isUpdating, setIsUpdating] = useState(false);
 
     const [searchParams, setSearchParams] = useState({
@@ -96,7 +96,7 @@ export default function BillHistory() {
     const openPaymentModal = (e, bill) => {
         e.stopPropagation();
         setPaymentModal({ isOpen: true, bill });
-        setPaymentForm({ mode: 'Cash', chequeNumber: '' });
+        setPaymentForm({ mode: 'Cash', chequeNumber: '', receivedAmount: bill.grandTotal });
     };
 
     const closePaymentModal = () => {
@@ -107,16 +107,18 @@ export default function BillHistory() {
         e.preventDefault();
         setIsUpdating(true);
         try {
+            const recAmt = paymentForm.mode !== 'Cheque' ? Number(paymentForm.receivedAmount) : null;
             await axios.put(`/bills/${paymentModal.bill._id}`, {
                 paymentStatus: 'Received',
                 paymentDate: new Date(),
                 paymentMode: paymentForm.mode,
-                chequeNumber: paymentForm.mode === 'Cheque' ? paymentForm.chequeNumber : undefined
+                chequeNumber: paymentForm.mode === 'Cheque' ? paymentForm.chequeNumber : undefined,
+                receivedAmount: recAmt
             });
             // Update local state
             setBills(bills.map(b =>
                 b._id === paymentModal.bill._id
-                    ? { ...b, paymentStatus: 'Received', paymentDate: new Date().toISOString(), paymentMode: paymentForm.mode, chequeNumber: paymentForm.mode === 'Cheque' ? paymentForm.chequeNumber : undefined }
+                    ? { ...b, paymentStatus: 'Received', paymentDate: new Date().toISOString(), paymentMode: paymentForm.mode, chequeNumber: paymentForm.mode === 'Cheque' ? paymentForm.chequeNumber : undefined, receivedAmount: recAmt }
                     : b
             ));
             closePaymentModal();
@@ -134,11 +136,12 @@ export default function BillHistory() {
                 paymentStatus: 'Pending',
                 paymentDate: null,
                 paymentMode: null,
-                chequeNumber: null
+                chequeNumber: null,
+                receivedAmount: null
             });
             setBills(bills.map(b =>
                 b._id === bill._id
-                    ? { ...b, paymentStatus: 'Pending', paymentDate: null, paymentMode: null, chequeNumber: null }
+                    ? { ...b, paymentStatus: 'Pending', paymentDate: null, paymentMode: null, chequeNumber: null, receivedAmount: null }
                     : b
             ));
         } catch (err) {
@@ -350,8 +353,10 @@ export default function BillHistory() {
                                                                 <CheckCircle className="w-3 h-3" />
                                                                 <span className="text-[10px] font-black uppercase tracking-widest">RECEIVED</span>
                                                             </div>
-                                                            <div className="text-[9px] text-gray-500 font-mono tracking-widest uppercase">
-                                                                {bill.paymentMode} {bill.chequeNumber ? `- ${bill.chequeNumber}` : ''}
+                                                            <div className="text-[11px] text-gray-300 font-bold font-mono tracking-wide uppercase mt-1">
+                                                                {bill.paymentMode}
+                                                                {bill.paymentMode === 'Cheque' && bill.chequeNumber ? ` - ${bill.chequeNumber}` : ''}
+                                                                {bill.paymentMode !== 'Cheque' && bill.receivedAmount !== undefined && bill.receivedAmount !== null ? ` (₹${bill.receivedAmount.toLocaleString('en-IN')})` : ''}
                                                             </div>
                                                         </div>
                                                     ) : (
@@ -531,9 +536,10 @@ export default function BillHistory() {
                                     </div>
                                 </div>
 
-                                <AnimatePresence>
-                                    {paymentForm.mode === 'Cheque' && (
+                                <AnimatePresence mode="wait">
+                                    {paymentForm.mode === 'Cheque' ? (
                                         <motion.div
+                                            key="cheque"
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: 'auto', opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
@@ -548,6 +554,27 @@ export default function BillHistory() {
                                                 value={paymentForm.chequeNumber}
                                                 onChange={(e) => setPaymentForm({ ...paymentForm, chequeNumber: e.target.value })}
                                                 placeholder="Enter cheque/reference number"
+                                                className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-3 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all text-sm font-mono"
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="cash-online"
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="space-y-2 overflow-hidden"
+                                        >
+                                            <label className="text-[11px] text-emerald-400/80 font-black uppercase tracking-widest flex items-center gap-2">
+                                                <Banknote className="w-3 h-3" /> Received Amount (₹)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                required
+                                                step="any"
+                                                value={paymentForm.receivedAmount}
+                                                onChange={(e) => setPaymentForm({ ...paymentForm, receivedAmount: e.target.value })}
+                                                placeholder="Enter actual received amount"
                                                 className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-3 text-white placeholder-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 transition-all text-sm font-mono"
                                             />
                                         </motion.div>

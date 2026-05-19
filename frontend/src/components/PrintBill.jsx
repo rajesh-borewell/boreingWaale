@@ -163,15 +163,36 @@ export default function PrintBill({ bill }) {
                             </tr>
                         </thead>
                         <tbody>
-                            {gridRows.map((item, i) => (
-                                <tr key={i} style={{ height: '38px', borderBottom: '1px solid #e5e7eb' }}>
-                                    <Td borderRight align="center">{item ? i + 1 : ''}</Td>
-                                    <Td borderRight align="left" padLeft>{item?.particulars ?? ''}</Td>
-                                    <Td borderRight align="center">{item?.qty ?? ''}</Td>
-                                    <Td borderRight align="right">{item ? '₹ ' + Number(item.rate).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</Td>
-                                    <Td align="right" fontWeight={item ? "600" : "normal"}>{item ? '₹ ' + Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</Td>
-                                </tr>
-                            ))}
+                            {gridRows.map((item, i) => {
+                                const isDeduction = item && item.amount < 0;
+                                
+                                return (
+                                    <tr key={i} style={{ height: '38px', borderBottom: '1px solid #e5e7eb', backgroundColor: '#ffffff' }}>
+                                        <Td borderRight align="center" color="#000000">{item ? i + 1 : ''}</Td>
+                                        <Td borderRight align="left" padLeft color="#000000">
+                                            {item?.particulars ?? ''}
+                                            {isDeduction && (
+                                                <span style={{
+                                                    fontSize: '8px',
+                                                    fontWeight: '800',
+                                                    backgroundColor: '#ffffff',
+                                                    color: '#000000',
+                                                    padding: '1.5px 5px',
+                                                    borderRadius: '3px',
+                                                    marginLeft: '8px',
+                                                    border: '1px solid #000000',
+                                                    display: 'inline-block',
+                                                    verticalAlign: 'middle',
+                                                    letterSpacing: '0.5px'
+                                                }}>DEDUCTION</span>
+                                            )}
+                                        </Td>
+                                        <Td borderRight align="center" color="#000000">{item && item.qty !== '' ? item.qty : ''}</Td>
+                                        <Td borderRight align="right" color="#000000">{item && item.rate !== '' ? '₹ ' + Number(item.rate).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</Td>
+                                        <Td align="right" fontWeight={item ? "600" : "normal"} color="#000000">{item && item.rate !== '' && item.qty !== '' ? '₹ ' + Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 }) : ''}</Td>
+                                    </tr>
+                                );
+                            })}
                         </tbody>
                         <tfoot>
                             <tr style={{ borderTop: '2px solid #000', height: '42px' }}>
@@ -216,13 +237,14 @@ function Th({ children, borderRight }) {
     );
 }
 
-function Td({ children, borderRight, align, padLeft, fontWeight }) {
+function Td({ children, borderRight, align, padLeft, fontWeight, color }) {
     return (
         <td style={{
             padding: padLeft ? '6px 16px' : '6px 6px', fontSize: '13px',
             fontWeight: fontWeight || 'normal',
             borderRight: borderRight ? '1px solid #000' : 'none',
-            textAlign: align
+            textAlign: align,
+            color: color || '#000000'
         }}>{children}</td>
     );
 }

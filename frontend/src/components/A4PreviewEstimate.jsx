@@ -170,19 +170,42 @@ export default function A4PreviewEstimate({ estimate }) {
                         </tr>
                     </thead>
                     <tbody>
-                        {items.map((item, i) => (
-                            <tr key={i} style={{ backgroundColor: i % 2 === 0 ? WHITE : LIGHT }}>
-                                <Td a="center" br>{i + 1}</Td>
-                                <Td a="left"   br pl="14px" fw="600">{item.particulars}</Td>
-                                <Td a="center" br>{item.qty}</Td>
-                                <Td a="right"  br pr="12px">
-                                    ₹ {Number(item.rate).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                </Td>
-                                <Td a="right"  pr="12px" fw="700" color={NAVY}>
-                                    ₹ {Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                </Td>
-                            </tr>
-                        ))}
+                        {items.map((item, i) => {
+                            const isDeduction = item.amount < 0;
+                            const rowBg = isDeduction ? '#fff5f5' : (i % 2 === 0 ? WHITE : LIGHT);
+                            const textColor = isDeduction ? '#b91c1c' : undefined;
+                            
+                            return (
+                                <tr key={i} style={{ backgroundColor: rowBg }}>
+                                    <Td a="center" br color={textColor}>{i + 1}</Td>
+                                    <Td a="left"   br pl="14px" fw="600" color={textColor}>
+                                        {item.particulars}
+                                        {isDeduction && (
+                                            <span style={{
+                                                fontSize: '8px',
+                                                fontWeight: '800',
+                                                backgroundColor: '#fee2e2',
+                                                color: '#b91c1c',
+                                                padding: '1.5px 5px',
+                                                borderRadius: '3px',
+                                                marginLeft: '8px',
+                                                border: '1px solid #fca5a5',
+                                                display: 'inline-block',
+                                                verticalAlign: 'middle',
+                                                letterSpacing: '0.5px'
+                                            }}>DEDUCTION</span>
+                                        )}
+                                    </Td>
+                                    <Td a="center" br color={textColor}>{item.qty !== '' ? item.qty : ''}</Td>
+                                    <Td a="right"  br pr="12px" color={textColor}>
+                                        {item.rate !== '' ? `₹ ${Number(item.rate).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : ''}
+                                    </Td>
+                                    <Td a="right"  pr="12px" fw="700" color={isDeduction ? '#b91c1c' : NAVY}>
+                                        {item.rate !== '' && item.qty !== '' ? `₹ ${Number(item.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : ''}
+                                    </Td>
+                                </tr>
+                            );
+                        })}
                         {emptyRows.map((_, i) => (
                             <tr key={`e${i}`} style={{ backgroundColor: (items.length + i) % 2 === 0 ? WHITE : LIGHT }}>
                                 <td style={eTd(true)}  />

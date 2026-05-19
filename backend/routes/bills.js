@@ -50,7 +50,7 @@ router.get("/", auth, async (req, res) => {
             }
         }
 
-        const bills = await Bill.find(query).populate('createdBy', 'username').sort({ billNumber: 1 });
+        const bills = await Bill.find(query).populate('createdBy', 'username').sort({ billNumber: -1 });
         res.json(bills);
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -71,7 +71,7 @@ router.get("/:id", auth, async (req, res) => {
 // Update a bill (protected)
 router.put("/:id", auth, async (req, res) => {
     try {
-        const { clientName, date, items, grandTotal, paymentStatus, paymentDate, paymentMode, chequeNumber } = req.body;
+        const { clientName, date, items, grandTotal, paymentStatus, paymentDate, paymentMode, chequeNumber, receivedAmount } = req.body;
         const bill = await Bill.findById(req.params.id);
 
         if (!bill) return res.status(404).json({ error: "Bill not found" });
@@ -82,9 +82,10 @@ router.put("/:id", auth, async (req, res) => {
         if (items !== undefined) bill.items = items;
         if (grandTotal !== undefined) bill.grandTotal = grandTotal;
         if (paymentStatus !== undefined) bill.paymentStatus = paymentStatus;
-        if (paymentDate !== undefined) bill.paymentDate = paymentDate === null ? undefined : paymentDate;
-        if (paymentMode !== undefined) bill.paymentMode = paymentMode === null ? undefined : paymentMode;
-        if (chequeNumber !== undefined) bill.chequeNumber = chequeNumber === null ? undefined : chequeNumber;
+        if (paymentDate !== undefined) bill.paymentDate = paymentDate === null ? null : paymentDate;
+        if (paymentMode !== undefined) bill.paymentMode = paymentMode === null ? null : paymentMode;
+        if (chequeNumber !== undefined) bill.chequeNumber = chequeNumber === null ? null : chequeNumber;
+        if (receivedAmount !== undefined) bill.receivedAmount = receivedAmount === null ? null : receivedAmount;
 
         const updatedBill = await bill.save();
         const populatedBill = await Bill.findById(updatedBill._id).populate('createdBy', 'username');
