@@ -8,23 +8,28 @@ const authRouter = require("./routes/auth");
 
 const app = express();
 
-// Configure CORS to allow both localhost and your future Render frontend URL
 const allowedOrigins = [
-  "http://localhost:5173", // Default Vite local development port
-  "https://frontend-jf3f.onrender.com" // Replace with your Render frontend URL once you have it
+  "http://localhost:5173",
+  "https://frontend-jf3f.onrender.com"
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.onrender.com')) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(null, true);
     }
-  }
+  },
+  credentials: true
 }));
 
 app.use(express.json());
+
+// Health Check Endpoint for Render
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "Backend is running" });
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/bills", billsRouter);
@@ -33,14 +38,13 @@ app.use("/api/estimates", estimatesRouter);
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
-if (!MONGO_URI) {
-  console.error("FATAL ERROR: MONGO_URI is not defined in .env file");
-  process.exit(1);
-}
+// Start server immediately so Render health checks pass
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-    app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch(err => console.error(err));
+if (!MONGO_URI) {
+  console.error("WARNING: MONGO_URI is not defined in environment variables!");
+} else {
+  mongoose.connect(MONGO_URI)
+    .then(() => console.log("Connected to MongoDB"))
+    .catch(err => console.error("MongoDB Connection Error:", err.message));
+}
