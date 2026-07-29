@@ -26,9 +26,13 @@ app.use(cors({
 
 app.use(express.json());
 
-// Health Check Endpoint for Render
+// Root endpoint & Health Check Endpoint for Render deployment
+app.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Rajesh Borewell Billing API Server is Live" });
+});
+
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Backend is running" });
+  res.status(200).json({ status: "ok", message: "Backend is running" });
 });
 
 app.use("/api/auth", authRouter);
