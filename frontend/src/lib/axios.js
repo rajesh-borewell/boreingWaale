@@ -4,11 +4,11 @@ import axios from 'axios';
 // otherwise it defaults to localhost for development.
 // For Render, you can either provide VITE_API_URL in your render environment variables, 
 // or once you get your Render backend URL, uncomment and replace the demo link below:
-// const RENDER_BACKEND_URL = "https://your-demo-backend-url.onrender.com/api";
+const BASE_URL = "https://backend-3t38.onrender.com/api";
 
-const BASE_URL = import.meta.env.VITE_API_URL 
-    ? `${import.meta.env.VITE_API_URL}/api` 
-    : 'http://localhost:5000/api';
+// const BASE_URL = import.meta.env.VITE_API_URL 
+//     ? `${import.meta.env.VITE_API_URL}/api` 
+//     : 'http://localhost:5000/api';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
